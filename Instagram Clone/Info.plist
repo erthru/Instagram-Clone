@@ -41,5 +41,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Billabong.ttf</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need to access your storage</string>
 </dict>
 </plist>
