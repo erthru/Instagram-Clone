@@ -1,6 +1,6 @@
 # Instagram Clone
 <br>
-<h1>Screenshots:</h1>
+<h2>Screenshots:</h2>
 <br>
 <img src="https://raw.githubusercontent.com/erthru/Instagram-Clone/master/ss1.png" width="418px" height="718px" >
 <br>
