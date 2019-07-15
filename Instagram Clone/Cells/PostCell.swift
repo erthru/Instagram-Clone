@@ -29,15 +29,7 @@ class PostCell: UICollectionViewCell{
         imgAvatar.image = UIImage(named: post.avatar)
         lbUser.text = post.username.lowercased()
         imgContent.image = UIImage(named: post.thumbnail)
-        lbCaption.attributedText = attributedText(withString: " \(post.caption)", boldString: post.username)
-    }
-    
-    private func attributedText(withString string: String, boldString: String) -> NSAttributedString {
-        let attrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 18)]
-        let attributedString = NSMutableAttributedString(string: boldString, attributes:attrs)
-        let normalString = NSMutableAttributedString(string: string)
-        attributedString.append(normalString)
-        return attributedString
+        lbCaption.attributedText = StringCheck.attributedText(withString: " \(post.caption)", boldString: post.username)
     }
     
     private func setupUI(){

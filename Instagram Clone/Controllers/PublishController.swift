@@ -12,8 +12,10 @@ import Photos
 
 class PublishController: UIViewController{
     
+    private var navRightBarButton: UIBarButtonItem!
     private let imgSelected = UIImageView(image: UIImage(named: "img_placeholder"))
     private let collectionLibrary = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout.init())
+    private let idc = UIActivityIndicatorView(style: .gray)
     
     private var libraries = [UIImage]()
     private var didLibariesReady = false
@@ -21,13 +23,17 @@ class PublishController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchLibrary()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         setupUI()
+        fetchLibrary()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     private func fetchLibrary(){
@@ -44,6 +50,8 @@ class PublishController: UIViewController{
                 let fetchOptions = PHFetchOptions()
                 let fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
                 
+                self.libraries.removeAll()
+                
                 for i in 0..<fetchResult.count {
                     let asset = fetchResult.object(at: i) as PHAsset
                     imgManager.requestImage(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: .aspectFill, options: requestOptions, resultHandler: { uiimage, info in
@@ -55,6 +63,10 @@ class PublishController: UIViewController{
                     self.didLibariesReady = true
                     self.imgSelected.image = self.libraries[0]
                     self.collectionLibrary.reloadData()
+                    self.collectionLibrary.isHidden = false
+                    self.idc.isHidden = true
+                    self.imgSelected.isHidden = false
+                    self.navRightBarButton.isEnabled = true
                 }
                 
                 break
@@ -80,12 +92,20 @@ class PublishController: UIViewController{
         // view
         view.addSubview(imgSelected)
         view.addSubview(collectionLibrary)
+        view.addSubview(idc)
         
         // navigation
         navigationItem.title = "All Photos"
-        let rightButtonItem = UIBarButtonItem(title: "Next", style: .done, target: self, action: nil)
-        rightButtonItem.tintColor = .blue
-        navigationItem.rightBarButtonItem = rightButtonItem
+        navRightBarButton = UIBarButtonItem(title: "Next", style: .done, target: self, action: nil)
+        navRightBarButton.tintColor = .blue
+        navRightBarButton.isEnabled = false
+        navigationItem.rightBarButtonItem = navRightBarButton
+        
+        // idc
+        idc.translatesAutoresizingMaskIntoConstraints = false
+        idc.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
+        idc.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        idc.startAnimating()
         
         // imgSelected
         imgSelected.translatesAutoresizingMaskIntoConstraints = false
@@ -93,6 +113,7 @@ class PublishController: UIViewController{
         imgSelected.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         imgSelected.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         imgSelected.heightAnchor.constraint(equalToConstant: 320).isActive = true
+        imgSelected.isHidden = true
         
         // collectionLibrary
         collectionLibrary.translatesAutoresizingMaskIntoConstraints = false
@@ -101,6 +122,7 @@ class PublishController: UIViewController{
         collectionLibrary.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         collectionLibrary.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         collectionLibrary.backgroundColor = .white
+        collectionLibrary.isHidden = true
         collectionLibrary.register(LibraryCell.self, forCellWithReuseIdentifier: "LibraryCell")
         collectionLibrary.dataSource = self
         collectionLibrary.delegate = self
@@ -121,7 +143,9 @@ extension PublishController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "LibraryCell", for: indexPath) as! LibraryCell
-        cell.build(image: libraries[indexPath.row])
+        if libraries.count != 0 {
+            cell.build(image: libraries[indexPath.row])
+        }
         return cell
     }
     
